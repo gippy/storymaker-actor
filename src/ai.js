@@ -33,6 +33,8 @@ ${mainCharacterDescription}
 In addition to main character, the series has following other important existing characters:
 ${additionalCharacters}
 
+Each chapter in the series will at most be around 2000 words long.
+
 The book is written in a specific format and it's your role to write the content of the book 
 while keeping the format consistent.
 
@@ -48,7 +50,6 @@ Each chapter of the book must always include:
 You will receive instructions in this exact format:
 **Chapter number:** <number>
 **Chapter description:** <one line>
-**Chapter length:** <min-max words>
 
 Your task is to write the chapter and output ONLY valid JSON in this format:
 {
@@ -66,8 +67,7 @@ All text except illustration + summary must be Markdown.`;
 
     const userMessage = `
 **Chapter number:** ${chapter.number}
-**Chapter description:** ${chapter.description}
-**Chapter length:** ${chapter.minLengthWords || '200'} - ${chapter.maxLengthWords || '400'}`;
+**Chapter description:** ${chapter.description}`;
 
     const response = await openai.chat.completions.create({
         model: "google/gemini-2.5-flash",
@@ -78,8 +78,7 @@ All text except illustration + summary must be Markdown.`;
     });
 
     let output = response.choices[0].message.content || "";
-
-    // Clean accidental code fences
+    
     output = output.replace(/```json/g, "").split("```")[0];
 
     return output;
