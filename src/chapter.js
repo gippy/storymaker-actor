@@ -6,6 +6,7 @@ import { prepareHtml } from './html.js';
 import { updateStatus } from './status.js';
 
 export const writtenChapters = {};
+export let latestChapterNumber = 0;
 const draftCounts = {};
 
 async function processChapterFromAI(chapterText, chapter, series, illustrationModel) {
@@ -76,9 +77,9 @@ async function processChapterFromAI(chapterText, chapter, series, illustrationMo
 
 export async function writeNewChapter(series, textModel, illustrationModel, retry = false) {
     try {
-        const latestChapterNumber = Math.max(0, ...Object.keys(writtenChapters));
+        const nextChapterNumber = Math.max(latestChapterNumber, ...Object.keys(writtenChapters)) + 1;
         const chapter = {
-            number: latestChapterNumber + 1,
+            number: nextChapterNumber,
         };
         log.info('Generating chapter', { number: chapter.number });
 

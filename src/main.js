@@ -2,7 +2,7 @@ import { Actor, log } from 'apify';
 import express from 'express';
 
 import { createChat } from './ai.js';
-import { writeNewChapter, writeChapter, updateChapter, writtenChapters } from './chapter.js';
+import { writeNewChapter, writeChapter, updateChapter, writtenChapters, latestChapterNumber } from './chapter.js';
 import { containerUrl } from './consts.js';
 import { getStatus, chapterHtml } from './live_view.js';
 import { updateStatus, status } from './status.js';
@@ -41,6 +41,7 @@ if (chapterHistoryStorageName) {
     if (chapterHistory.items.length > 0) {
         log.info('Loaded chapter history from shared dataset', { chapterCount: seriesChapterHistory.length });
     }
+    latestChapterNumber = chapterHistory.items.reduce((max, item) => item.chapterNumber > max ? item.chapterNumber : max, 0);
 }
 
 await createChat({
@@ -81,7 +82,7 @@ async function finish() {
                 summary: chapter.summary,
             });
             await chapterHistorySharedKeyValueStore.setValue(chapter.htmlFileName, chapter.html, { contentType: 'text/html' });
-            await chapterHistorySharedKeyValueStore.setValue(chapter.jsonFileName, chapter.json, { contentType: 'application/json' });
+            await chapterHistorySharedKeyValueStore.setValue(chapter.jsonFileName, chapter.json);
             await chapterHistorySharedKeyValueStore.setValue(chapter.illustrationFileName, chapter.imageBuffer, { contentType: 'image/png' });
         }
         await chapterHistorySharedDataset.pushData(historyToStore);
