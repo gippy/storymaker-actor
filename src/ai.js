@@ -22,6 +22,7 @@ export async function createChat({
     seriesDescription,
     mainCharacterDescription,
     additionalCharacters,
+    textModel = "google/gemini-2.5-flash",
 }) {
     systemInstruction = `
     You are an accomplished shadow writer and your role is to provide support to flash out ideas 
@@ -33,7 +34,7 @@ export async function createChat({
     ${mainCharacterDescription}
 
     In addition to main character, the series has following other important existing characters:
-    ${additionalCharacters}
+    ${additionalCharacters || "None"}
 
     The book is written in a specific format and it's your role to write the content of the book 
     while keeping the format consistent.
@@ -74,7 +75,7 @@ export async function createChat({
 // Generic function to send a message to the model
 async function sendAIMessage(message) {
     const response = await openai.chat.completions.create({
-        model: "google/gemini-2.5-flash",
+        model: textModel,
         messages: [
             { role: "system", content: systemInstruction },
             ...history,
@@ -153,6 +154,7 @@ export async function createIllustrationForChapter({
     additionalCharacters,
     chapterSummary,
     chapterIllustrationDescription,
+    illustrationModel = "google/gemini-2.5-flash-image",
 }) {
     const prompt = `
 Create an illustration for the chapter in a series titled ${seriesTitle}.
@@ -176,7 +178,7 @@ ${chapterIllustrationDescription}
 `;
 
     const response = await openai.chat.completions.create({
-        model: "google/gemini-2.5-flash-image",
+        model: illustrationModel,
         messages: [
             { role: "user", content: prompt }
         ],

@@ -8,7 +8,7 @@ import { updateStatus } from './status.js';
 export const writtenChapters = {};
 const draftCounts = {};
 
-async function processChapterFromAI(chapterText, chapter, series) {
+async function processChapterFromAI(chapterText, chapter, series, illustrationModel) {
     await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Processing chapter ${chapter.number}`, isFinished: false });
     const draftNumber = (draftCounts[chapter.number] ?? 0) + 1;
     const draftChapterFileName = `draft-chapter-${chapter.number.toString().padStart(2, "0")}-${draftNumber.toString().padStart(2, "0")}`;
@@ -27,6 +27,7 @@ async function processChapterFromAI(chapterText, chapter, series) {
     log.info('Generating illustration');
     const imageBuffers = await createIllustrationForChapter({
         ...series,
+        illustrationModel,
         chapterSummary: chapterData.summary,
         chapterIllustrationDescription: chapterData.illustration
     });
@@ -66,19 +67,17 @@ async function processChapterFromAI(chapterText, chapter, series) {
     return result;
 }
 
-export async function writeNewChapter(series, { minLengthWords, maxLengthWords }, retry = false) {
+export async function writeNewChapter(series, textModel, illustrationModel, retry = false) {
     try {
         const latestChapterNumber = Math.max(0, ...Object.keys(writtenChapters));
         const chapter = {
-            number: latestChapterNumber + 1,
-            minLengthWords: minLengthWords ?? 100,
-            maxLengthWords: maxLengthWords ?? 2000
+            number: latestChapterNumber + 1
         };
         log.info('Generating chapter', { number: chapter.number });
 
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
-        let chapterText = await writeChapterWithAI(chapter, retry);
-        return await processChapterFromAI(chapterText, chapter, series);
+        let chapterText = await writeChapterWithAI(chapter, textModel, retry);
+        return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
         if (error.data?.invalidItems) {
             // Here we log separate exception for each item which failed validation, but you can handle it any way you want
@@ -90,18 +89,18 @@ export async function writeNewChapter(series, { minLengthWords, maxLengthWords }
             log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         }
         // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
-        if (!retry) return writeNewChapter(series, { minLengthWords, maxLengthWords }, true);
+        if (!retry) return writeNewChapter(series, textModel, illustrationModel, true);
         else throw error;
     }
 }
 
-export async function writeChapter(series, chapter, retry = false) {
+export async function writeChapter(series, chapter, textModel, illustrationModel,retry = false) {
     try {
         log.info('Generating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
 
-        let chapterText = await writeChapterWithAI(chapter, retry);
-        return await processChapterFromAI(chapterText, chapter, series);
+        let chapterText = await writeChapterWithAI(chapter, textModel, retry);
+        return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
         if (error.data?.invalidItems) {
             // Here we log separate exception for each item which failed validation, but you can handle it any way you want
@@ -118,13 +117,13 @@ export async function writeChapter(series, chapter, retry = false) {
     }
 }
 
-export async function updateChapter(series, chapter, retry = false) {
+export async function updateChapter(series, chapter, textModel, illustrationModelretry = false) {
     try {
         log.info('Updating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
 
-        let chapterText = await updateChapterWithAI(chapter, retry);
-        return await processChapterFromAI(chapterText, chapter, series);
+        let chapterText = await updateChapterWithAI(chapter, textModel, retry);
+        return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
         if (error.data?.invalidItems) {
             // Here we log separate exception for each item which failed validation, but you can handle it any way you want
@@ -136,7 +135,7 @@ export async function updateChapter(series, chapter, retry = false) {
             log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         }
         // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
-        if (!retry) return updateChapter(series, chapter, true);
+        if (!retry) return updateChapter(series, chapter, textModel, illustrationModel, true);
         else throw error;
     }
 }
