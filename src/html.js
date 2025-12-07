@@ -2,11 +2,11 @@ import showdown from 'showdown';
 
 const converter = new showdown.Converter();
 
-function convertToHtml(markdown) {
+export function convertToHtml(markdown) {
     return converter.makeHtml(markdown);
 };
 
-export function prepareHtml(seriesTitle, chapter, illustrationUrl) {
+export function prepareHtml(seriesTitle, chapter, illustrationFilename) {
     return `
         <html>
             <head><title>${seriesTitle} - ${chapter.chapterName}</title></head>
@@ -20,7 +20,7 @@ export function prepareHtml(seriesTitle, chapter, illustrationUrl) {
                 <hr>
                 ${convertToHtml(chapter.body)}
                 <br />
-                <img src="${illustrationUrl}" alt="chapter illustration" />
+                <img src="${illustrationFilename}" alt="chapter illustration" />
 
                 <p></p>
                 <p>Authors note:</p>

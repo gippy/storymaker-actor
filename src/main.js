@@ -1,59 +1,98 @@
 import { Actor, log } from 'apify';
+import express from 'express';
 
-import { writeChapterWithAI, createIllustrationForChapter } from './ai.js';
-import { keyValueStoreUrl } from './consts.js';
-import { prepareHtml } from './html.js';
+import { createChat } from './ai.js';
+import { writeNewChapter, writeChapter, updateChapter, writtenChapters } from './chapter.js';
+import { containerUrl } from './consts.js';
+import { getStatus, chapterHtml } from './live_view.js';
+import { updateStatus, status } from './status.js';
 
 await Actor.init();
 
-const { seriesTitle, seriesGenre, seriesDescription, mainCharacterDescription, additionalCharacters, chapter } = await Actor.getInput();
+const { seriesTitle, seriesGenre, seriesDescription, mainCharacterDescription, additionalCharacters, chapters, interactiveMode } = await Actor.getInput();
 
-log.info('Generating chapter');
-
-let chapterText = await writeChapterWithAI({
+const series = {
     seriesTitle,
     seriesGenre,
     seriesDescription,
     mainCharacterDescription,
     additionalCharacters,
-    chapter
-});
+};
 
-let newChapterText = '';
-if (chapterText.startsWith('```json')) newChapterText = chapterText.slice(8, -4);
-
-const chapterData = JSON.parse(newChapterText || chapterText);
-await Actor.setValue('chapter.json', chapterData);
-log.info('Generated chapter', { name: chapterData.chapterName });
-
-log.info('Generating illustration');
-const imageBuffers = await createIllustrationForChapter({
+await createChat({
     seriesTitle,
     seriesGenre,
     seriesDescription,
     mainCharacterDescription,
-    additionalCharacters,
-    chapterSummary: chapterData.summary,
-    chapterIllustrationDescription: chapterData.illustration
+    additionalCharacters
 });
 
-const illustrationFileName = `illustration.png`;
-const buffer = imageBuffers[0];
-await Actor.setValue(illustrationFileName, buffer, { contentType: 'image/png' });
+for (let i = 0; i < chapters.length; i++) {
+    const chapter = chapters[i]
+    await writeChapter(series, chapter);
+}
 
-log.info(`Generated illustration`, { url: `${keyValueStoreUrl}/${illustrationFileName}` });
+if (interactiveMode) {
+    const app = express();
+    app.use(express.json());
 
-log.info('Generating html');
-const chapterFileName = 'chapter.html';
-const fullChapterHtml = prepareHtml(seriesTitle, chapterData, `${keyValueStoreUrl}/${illustrationFileName}`);
-await Actor.setValue(chapterFileName, fullChapterHtml, { contentType: 'text/html' });
-log.info('Generated html', { url: `${keyValueStoreUrl}/${chapterFileName}`});
+    app.get('/', async (req, res) => {
+        const html = await getStatus({ seriesTitle });
+        res.send(html);
+    });
 
-await Actor.pushData({
-    chapterNumber: chapter.number,
-    ...chapterData,
-    htmlUrl: `${keyValueStoreUrl}/${chapterFileName}`,
-    illustrationUrl: `${keyValueStoreUrl}/${illustrationFileName}`,
-});
+    app.get('/status', async (req, res) => {
+        let chaptersHtml = Object.keys(writtenChapters).sort((a,b) => b > a).map((key) => chapterHtml(writtenChapters[key])).join('\n');
+        res.send({
+            statusMessage: status.message,
+            chapters: chaptersHtml,
+        });
+    });
 
-await Actor.exit();
+    app.post('/', async (req, res) => {
+        const chapterData = {
+            minLengthWords: req.body.minLengthWords,
+            maxLengthWords: req.body.maxLengthWords,
+        };
+        log.info('Received next chapter data', chapterData);
+        const data = await writeNewChapter(series, chapterData);
+        res.send(data);
+    });
+
+    app.post('/chapter/:chapterNumber', async (req, res) => {
+        const chapterData = {
+            number: parseInt(req.params.chapterNumber, 10),
+            ...req.body,
+        };
+        log.info('Received new chapter data', chapterData);
+        const data = await writeChapter(series, chapterData);
+        res.send(data);
+    });
+
+    app.put('/chapter/:chapterNumber', async (req, res) => {
+        const chapterData = {
+            number: parseInt(req.params.chapterNumber, 10),
+            updateRequest: req.body.message,
+        };
+        const data = await updateChapter(series, chapterData);
+        res.send(data);
+    });
+
+    app.get('/exit', async (req, res) => {
+        log.info('Received exit command, stopping interactive mode');
+        res.send({ status: 'ok', message: 'Exiting...' });
+        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isFinished: true });
+        void Actor.exit();
+    })
+
+    const port = process.env.ACTOR_WEB_SERVER_PORT;
+    app.listen(port, async () => {
+        log.info('Interactive mode API started', { url: containerUrl });
+        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Interactive mode started`, isFinished: false });
+    });
+}
+
+if (!interactiveMode) {
+    await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isFinished: true });
+    await Actor.exit();
+}
