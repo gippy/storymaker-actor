@@ -88,16 +88,6 @@
                 "deepseek/deepseek-chat-v3.1",
                 "mistralai/mistral-nemo"
             ],
-            "enumTitles": [
-                "Google: Gemini 2.5 Flash", 
-                "Google: Gemini 2.5 Pro", 
-                "OpenAI: GPT 5.1 Mini",
-                "OpenAI: GPT 5.1",
-                "xAI: Grok 4.1 Fast",
-                "Anthropic: Claude Sonnet 4.5",
-                "Deepseek: Deepseek Chat v3.1",
-                "Mistral: Mistral Nemo"
-            ],
             "prefill": "google/gemini-2.5-flash",
             "default": "google/gemini-2.5-flash",
             "sectionCaption": "Used models",
@@ -116,14 +106,6 @@
                 "openai/gpt-5-image",
                 "black-forest-labs/flux.2-flex",
                 "black-forest-labs/flux.2-pro"
-            ],
-            "enumTitles": [
-                "Google: Gemini 2.5 Flash Image (Nano Banana)", 
-                "Google: Nano Banana Pro (Gemini 3 Pro Image Preview)",
-                "OpenAI: GPT-5 Image Mini", 
-                "OpenAI: GPT-5 Image",
-                "Black Forest Labs: FLUX.2 Flex",
-                "Black Forest Labs: FLUX.2 Pro"
             ],
             "prefill": "google/gemini-2.5-flash-image",
             "default": "google/gemini-2.5-flash-image"
