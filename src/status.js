@@ -72,23 +72,29 @@ export async function updateStatus({ seriesTitle, writtenChapters, statusMessage
     </head>
     <body>
         <div class="container">
-            <div class="status">
-                <p>${statusMessage}</p>
-                <p style="font-size: 0.8rem; margin-top: 4px; color: ${status.isInteractiveModeOn ? '#10b981' : '#6b7280'}">
-                    Interactive Mode: ${status.isInteractiveModeOn ? 'ON' : 'OFF'}
-                </p>
-            </div>
             ${isFinished 
-            ? `
-            <div class="download-link">
-                <p>Download final chapters: <a href="${keyValueStoreUrl}?collection=final">${keyValueStoreUrl}?collection=final</a></p>
-            </div>
-            `
-            : `
-            <div class="api-information">
-                <p>API is available at: <a href="${containerUrl}">${containerUrl}</a></p>
-            </div>
-            `}
+                ? `
+                    <div class="download-link">
+                        <p>Download final chapters: <a href="${keyValueStoreUrl}?collection=final">${keyValueStoreUrl}?collection=final</a></p>
+                    </div>
+                `
+                : `
+                    <div class="status">
+                        <p>${statusMessage}</p>
+                        <p style="font-size: 0.8rem; margin-top: 4px; color: ${status.isInteractiveModeOn ? '#10b981' : '#6b7280'}">
+                            Interactive Mode: ${status.isInteractiveModeOn ? 'ON' : 'OFF'}
+                        </p>
+                    </div>
+                `
+            }
+
+            ${!isFinished && status.isInteractiveModeOn
+                ? `
+                    <div class="api-information">
+                        <p>API is available at: <a href="${containerUrl}">${containerUrl}</a></p>
+                    </div>
+                `
+                : ''}
 
             ${chaptersHtml}
         </div>

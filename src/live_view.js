@@ -84,9 +84,6 @@ export async function getStatus({ seriesTitle }) {
                     <p>${status.message}</p>
                 </div>
             </div>
-            <div class="api-information">
-                <p>API is available at: <a href="${containerUrl}">${containerUrl}</a></p>
-            </div>
             <!-- Controls inserted under the top row/status area -->
             <div class="controls" style="margin-bottom:12px;display:flex;gap:8px;align-items:center">
                 <button id="refresh-btn" aria-label="Refresh chapters and status" style="background:var(--accent);color:white;border:0;padding:8px 12px;border-radius:8px;cursor:pointer">Refresh</button>

@@ -89,6 +89,7 @@ if (interactiveMode) {
     app.get('/exit', async (req, res) => {
         log.info('Received exit command, stopping interactive mode');
         res.send({ status: 'ok', message: 'Exiting...' });
+        isInteractiveModeOn = false;
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
         void Actor.exit();
     })
