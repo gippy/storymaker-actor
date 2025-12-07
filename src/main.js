@@ -78,7 +78,7 @@ async function finish() {
         for (let i = 0; i < keys.length; i++) {
             const chapter = writtenChapters[keys[i]];
             historyToStore.push({
-                chapterNumber: chapter.number,
+                chapterNumber: chapter.chapterNumber,
                 summary: chapter.summary,
             });
             await chapterHistorySharedKeyValueStore.setValue(chapter.htmlFileName, chapter.html, { contentType: 'text/html' });
