@@ -1,0 +1,19 @@
+{
+    "name": "storymaker-actor",
+    "version": "0.0.1",
+    "type": "module",
+    "description": "An actor that generates chapters for web series based on user prompts.",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "apify": "3.4.2",
+        "showdown": "2.1.0",
+        "openai": "6.10.0"
+    },
+    "scripts": {
+        "start": "node ./src/main.js"
+    },
+    "author": "Jaroslav Hejlek",
+    "license": "ISC"
+}
