@@ -104,7 +104,7 @@
             "type": "string",
             "description": "AI model used for text generation",
             "editor": "select",
-            "enumSuggestions": [
+            "enumSuggestedValues": [
                 "google/gemini-2.5-flash", 
                 "google/gemini-2.5-pro", 
                 "openai/gpt-5.1-mini",
