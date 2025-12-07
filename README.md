@@ -3,7 +3,7 @@
 This repository contains the code for the Storymaker Actor, which is a demonstration Actor for how to use schemas on Apify platform.
 Each version introduces new features and improvements to showcase the capabilities of Apify Actors.
 
-Version: 0.0 - Initial release with basic functionality and implemented ``actor.json` file.
+Version: 0.0 - Initial release with basic functionality and implemented `actor.json` file.
 
 Version: 0.1 - Added `input_schema.json`, to provide structured and validated input for the Actor.
 
