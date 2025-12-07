@@ -32,6 +32,8 @@ for (let i = 0; i < chapters.length; i++) {
     await writeChapter(series, chapter);
 }
 
+let isInteractiveModeOn = false;
+
 if (interactiveMode) {
     const app = express();
     app.use(express.json());
@@ -81,18 +83,19 @@ if (interactiveMode) {
     app.get('/exit', async (req, res) => {
         log.info('Received exit command, stopping interactive mode');
         res.send({ status: 'ok', message: 'Exiting...' });
-        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isFinished: true });
+        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
         void Actor.exit();
     })
 
     const port = process.env.ACTOR_WEB_SERVER_PORT;
     app.listen(port, async () => {
         log.info('Interactive mode API started', { url: containerUrl });
-        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Interactive mode started`, isFinished: false });
+        isInteractiveModeOn = true;
+        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Interactive mode started`, isInteractiveModeOn: isInteractiveModeOn, isFinished: false });
     });
 }
 
 if (!interactiveMode) {
-    await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isFinished: true });
+    await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
     await Actor.exit();
 }

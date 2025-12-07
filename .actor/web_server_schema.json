@@ -8,25 +8,15 @@
     "paths": {
         "/": {
             "get": {
-                "summary": "Health Check",
-                "operationId": "getStatus",
+                "summary": "Interactive Status Page",
+                "operationId": "getInteractiveStatus",
                 "responses": {
                     "200": {
-                        "description": "Server status is OK.",
+                        "description": "Returns the interactive status page HTML.",
                         "content": {
-                            "application/json": {
+                            "text/html": {
                                 "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "ok"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Hello!"
-                                        }
-                                    }
+                                    "type": "string"
                                 }
                             }
                         }
@@ -59,6 +49,62 @@
                     },
                     "400": {
                         "description": "Invalid input parameters."
+                    }
+                }
+            }
+        },
+        "/status": {
+            "get": {
+                "summary": "Get Status",
+                "operationId": "getStatus",
+                "responses": {
+                    "200": {
+                        "description": "Returns the current status and chapters HTML.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "statusMessage": {
+                                            "type": "string",
+                                            "example": "Finished"
+                                        },
+                                        "chapters": {
+                                            "type": "string",
+                                            "description": "HTML string of the chapters."
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/exit": {
+            "get": {
+                "summary": "Exit Actor",
+                "operationId": "exitActor",
+                "responses": {
+                    "200": {
+                        "description": "Signals the actor to exit.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "ok"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Exiting..."
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

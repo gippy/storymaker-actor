@@ -5,6 +5,7 @@ import { convertToHtml } from './html.js';
 
 export const status = {
     message: '',
+    isInteractiveModeOn: false,
 };
 
 function chapterHtml(chapter) {
@@ -34,8 +35,11 @@ function chapterHtml(chapter) {
     `;
 }
 
-export async function updateStatus({ seriesTitle, writtenChapters, statusMessage, isFinished }) {
+export async function updateStatus({ seriesTitle, writtenChapters, statusMessage, isInteractiveModeOn, isFinished }) {
     status.message = statusMessage;
+    if (typeof isInteractiveModeOn !== 'undefined') {
+        status.isInteractiveModeOn = isInteractiveModeOn;
+    }
     let chaptersHtml = Object.keys(writtenChapters).sort((a,b) => b > a).map((key) => chapterHtml(writtenChapters[key])).join('\n');
     const statusPage = `<html>
     <head>
@@ -63,13 +67,13 @@ export async function updateStatus({ seriesTitle, writtenChapters, statusMessage
             @media (max-width:640px){body{padding:14px} section header h2{font-size:1rem}}
             /* subtle content formatting inside chapters */
             blockquote{border-left:3px solid rgba(99,102,241,.12);padding-left:12px;color:var(--muted);margin:12px 0}
-            code{background:#f3f4f6;padding:2px 6px;border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace}
-        </style>
-    </head>
     <body>
         <div class="container">
             <div class="status">
                 <p>${statusMessage}</p>
+                <p style="font-size: 0.8rem; margin-top: 4px; color: ${status.isInteractiveModeOn ? '#10b981' : '#6b7280'}">
+                    Interactive Mode: ${status.isInteractiveModeOn ? 'ON' : 'OFF'}
+                </p>
             </div>
             ${isFinished 
             ? `
