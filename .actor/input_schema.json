@@ -135,7 +135,7 @@
             "type": "string",
             "description": "AI model used for illustration generation",
             "editor": "select",
-            "enumSuggestions": [
+            "enumSuggestedValues": [
                 "google/gemini-2.5-flash-image", 
                 "google/gemini-3-pro-image-preview",
                 "openai/gpt-5-image-mini",
