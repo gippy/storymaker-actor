@@ -115,12 +115,12 @@
             "type": "string",
             "editor": "textfield",
             "description": "Define a name for storages used to store chapters across multiple runs",
-            "pattern": "^[a-zA-Z0-9-_]+~[a-zA-Z0-9-_]+$",
+            "pattern": "^[a-zA-Z0-9-]+$",
             "errorMessage": {
                 "pattern": "Please provide full named storage name in format <username>~<storage name>"
             },
             "sectionCaption": "Chapter history",
-            "sectionDescription": "If you want to save the generated chapters in a named storage so that future runs can use it as context, provide a name here. The name will be used to create a named Dataset and Key-Value Store in your Apify account. Use format <username>~<storage name>."
+            "sectionDescription": "If you want to save the generated chapters in a named storage so that future runs can use it as context, provide a name here. The name will be used to create a named Dataset and Key-Value Store in your Apify account."
         }
     },
     "required": ["seriesTitle", "seriesGenre", "seriesDescription", "mainCharacterDescription"]
