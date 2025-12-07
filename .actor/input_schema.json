@@ -1,0 +1,97 @@
+{
+    "title": "Storymaker",
+    "description": "Input schema for Storymaker Actor",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "seriesTitle": {
+            "title": "Series title",
+            "type": "string",
+            "description": "Name of the series",
+            "editor": "textfield"
+        },
+        "seriesDescription": {
+            "title": "Series description",
+            "type": "string",
+            "description": "Description of the series",
+            "editor": "textarea"
+        },
+        "mainCharacterDescription": {
+            "title": "Main character",
+            "type": "string",
+            "description": "Describe the main character",
+            "editor": "textarea"
+        },
+        "additionalCharacters": {
+            "title": "Additional characters",
+            "type": "string",
+            "description": "Describe additional characters appearing in the series",
+            "editor": "textarea"
+        },
+        "chapters": {
+            "title": "Chapters",
+            "type": "array",
+            "description": "Defines the chapters of the story",
+            "editor": "schemaBased",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "title": "Chapter number",
+                        "type": "integer",
+                        "description": "Which chapter we are currently on",
+                        "editor": "number"
+                    },
+                    "description": {
+                        "title": "Description of the chapter",
+                        "type": "string",
+                        "description": "Descripe what should happen in the chapter",
+                        "editor": "textarea"
+                    },
+                    "minLengthWords": {
+                        "title": "Minimum length of the chapter",
+                        "type": "integer",
+                        "description": "How long the chapter should be at minimum (word count)",
+                        "editor": "number",
+                        "unit": "words"
+                    },
+                    "maxLengthWords": {
+                        "title": "Maximum length of the chapter",
+                        "type": "integer",
+                        "description": "How long the chapter should be at maximum (word count)",
+                        "editor": "number",
+                        "unit": "words"
+                    }
+                },
+                "required": ["number", "description", "minLengthWords", "maxLengthWords"],
+                "additionalProperties": false
+            },
+            "default": [],
+            "sectionCaption": "Chapters",
+            "sectionDescription": "Chapters provided in this section will be auto generated at the start of the run before the interactive mode is enabled (if you use it). If interactive mode is not enabled. After the chapters are generated, the Actor run will finish."
+        
+        },
+        "interactiveMode": {
+            "title": "Enable interactive mode",
+            "type": "boolean",
+            "description": "Allows you to interact with the Actor run through API",
+            "editor": "checkbox",
+            "default": false,
+            "sectionCaption": "Interactive mode",
+            "sectionDescription": "If you want to have more control over the creation of the chapters. You can run the Actor in interactive mode. This will allow you to use API to create and modify the chapters. But you will have to end the run either through `abort` in Apify Console, or through `/exit` API endpoint"
+        },
+        "chapterHistoryStorageName": {
+            "title": "Chapter history",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Define a name for storages used to store chapters across multiple runs",
+            "pattern": "^[a-zA-Z0-9-_]+~[a-zA-Z0-9-_]+$",
+            "errorMessage": {
+                "pattern": "Please provide full named storage name in format <username>~<storage name>"
+            },
+            "sectionCaption": "Chapter history",
+            "sectionDescription": "If you want to save the generated chapters in a named storage so that future runs can use it as context, provide a name here"
+        }
+    },
+    "required": ["seriesTitle", "seriesDescription", "mainCharacterDescription", "additionalCharacters"]
+}

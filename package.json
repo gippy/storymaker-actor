@@ -2,7 +2,7 @@
     "name": "storymaker-actor",
     "version": "0.0.1",
     "type": "module",
-    "description": "An actor that generates chapters for web series based on user prompts.",
+    "description": "An Actor that generates chapters for web series based on user prompts.",
     "engines": {
         "node": ">=22.0.0"
     },
