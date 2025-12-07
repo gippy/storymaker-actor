@@ -46,7 +46,7 @@ async function processChapterFromAI(chapterText, chapter, series) {
     const finalFullChapterHtml = prepareHtml(series.seriesTitle, chapterData, `${keyValueStoreUrl}/${finalIllustrationFileName}`);
     await Actor.setValue(draftHtmlFileName, draftFullChapterHtml, { contentType: 'text/html' });
     await Actor.setValue(finalHtmlFileName, finalFullChapterHtml, { contentType: 'text/html' });
-    log.info('Generated html', { url: `${keyValueStoreUrl}/${draftHtmlFileName}`});
+    log.info('Generated html', { url: `${keyValueStoreUrl}/${draftHtmlFileName}` });
 
     const result = {
         chapterNumber: chapter.number,
@@ -67,7 +67,7 @@ async function processChapterFromAI(chapterText, chapter, series) {
 }
 
 export async function writeNewChapter(series, { minLengthWords, maxLengthWords }, retry = false) {
-    try {        
+    try {
         const latestChapterNumber = Math.max(0, ...Object.keys(writtenChapters));
         const chapter = {
             number: latestChapterNumber + 1,
@@ -96,7 +96,7 @@ export async function writeNewChapter(series, { minLengthWords, maxLengthWords }
 }
 
 export async function writeChapter(series, chapter, retry = false) {
-    try {        
+    try {
         log.info('Generating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
 
@@ -119,7 +119,7 @@ export async function writeChapter(series, chapter, retry = false) {
 }
 
 export async function updateChapter(series, chapter, retry = false) {
-    try {        
+    try {
         log.info('Updating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
 

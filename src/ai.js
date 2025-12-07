@@ -3,11 +3,11 @@ import { Actor } from "apify";
 
 // Create OpenAI client using OpenRouter on Apify
 const openai = new OpenAI({
-  baseURL: "https://openrouter.apify.actor/api/v1",
-  apiKey: "no-key-required-but-must-not-be-empty",
-  defaultHeaders: {
-    Authorization: `Bearer ${process.env.APIFY_TOKEN}`,
-  },
+    baseURL: "https://openrouter.apify.actor/api/v1",
+    apiKey: "no-key-required-but-must-not-be-empty",
+    defaultHeaders: {
+        Authorization: `Bearer ${process.env.APIFY_TOKEN}`,
+    },
 });
 
 // Chat state
@@ -17,13 +17,13 @@ let messageCount = 0;
 
 // Create system prompt (formerly ai.chats.create)
 export async function createChat({
-  seriesTitle,
-  seriesGenre,
-  seriesDescription,
-  mainCharacterDescription,
-  additionalCharacters,
+    seriesTitle,
+    seriesGenre,
+    seriesDescription,
+    mainCharacterDescription,
+    additionalCharacters,
 }) {
-  systemInstruction = `
+    systemInstruction = `
     You are an accomplished shadow writer and your role is to provide support to flash out ideas 
     for new chapters in a web series called ${seriesTitle}.
     The series is in ${seriesGenre} genre and is about:
@@ -55,107 +55,106 @@ export async function createChat({
 
     Output MUST always be JSON in this exact format:
     {
-      chapterName: { type: "string" }, 
-      introduction: { type: "string" },
-      attribution: { type: "string" },
-      body: { type: "string" },
-      illustration: { type: "string" },
-      note: { type: "string" },
-      summary: { type: "string" }
+        chapterName: { type: "string" }, 
+        introduction: { type: "string" },
+        attribution: { type: "string" },
+        body: { type: "string" },
+        illustration: { type: "string" },
+        note: { type: "string" },
+        summary: { type: "string" }
     }
 
-    Do NOT use "\`\`\`" anywhere.
-  `;
+    Do NOT use "\`\`\`" anywhere.`;
 
-  // Reset chat state when a new chat is created
-  history = [];
-  messageCount = 0;
+    // Reset chat state when a new chat is created
+    history = [];
+    messageCount = 0;
 }
 
 // Generic function to send a message to the model
 async function sendAIMessage(message) {
-  const response = await openai.chat.completions.create({
-    model: "google/gemini-2.5-flash",
-    messages: [
-      { role: "system", content: systemInstruction },
-      ...history,
-      { role: "user", content: message },
-    ],
-  });
+    const response = await openai.chat.completions.create({
+        model: "google/gemini-2.5-flash",
+        messages: [
+            { role: "system", content: systemInstruction },
+            ...history,
+            { role: "user", content: message },
+        ],
+    });
 
-  const text = response.choices[0].message.content;
+    const text = response.choices[0].message.content;
 
-  // update conversation history
-  history.push({ role: "user", content: message });
-  history.push({ role: "assistant", content: text });
+    // update conversation history
+    history.push({ role: "user", content: message });
+    history.push({ role: "assistant", content: text });
 
-  return text;
+    return text;
 }
 
 export async function writeChapterWithAI(chapter, retry) {
-  messageCount++;
+    messageCount++;
 
-  const message = `${retry
-    ? "I could not parse your answer. Send the chapter again, but make sure to create just one chapter and output it in correct format."
-    : ""
-    }
+    const message = `${retry
+        ? "I could not parse your answer. Send the chapter again, but make sure to create just one chapter and output it in correct format."
+        : ""
+        }
 **Chapter number:** ${chapter.number}
 **Chapter description:** ${chapter.description ?? ""}`;
 
-  const text = await sendAIMessage(message);
+    const text = await sendAIMessage(message);
 
-  const requestWithResponse = `Message:
+    const requestWithResponse = `Message:
 ${message}
 
 Response:
 ${text}`;
 
-  await Actor.setValue(
-    `communication-${messageCount.toString().padStart(3, "0")}.txt`,
-    requestWithResponse,
-    { contentType: "text/plain" }
-  );
+    await Actor.setValue(
+        `communication-${messageCount.toString().padStart(3, "0")}.txt`,
+        requestWithResponse,
+        { contentType: "text/plain" }
+    );
 
-  return text.replace(/```json/g, "").split("```")[0];
+    return text.replace(/```json/g, "").split("```")[0];
 }
 
 export async function updateChapterWithAI(chapter, retry) {
-  messageCount++;
+    messageCount++;
 
-  const message = `${retry
-    ? "I could not parse your answer. Send the chapter again, but make sure to create just one chapter and output it in correct format."
-    : ""
-    }
+    const message = `${retry
+        ? "I could not parse your answer. Send the chapter again, but make sure to create just one chapter and output it in correct format."
+        : ""
+        }
 **Chapter number:** ${chapter.number}
 **Update request:** ${chapter.updateRequest}`;
 
-  const text = await sendAIMessage(message);
+    const text = await sendAIMessage(message);
 
-  const requestWithResponse = `Message:
+    const requestWithResponse = `Message:
 ${message}
 
 Response:
 ${text}`;
 
-  await Actor.setValue(
-    `communication-${messageCount.toString().padStart(3, "0")}.txt`,
-    requestWithResponse,
-    { contentType: "text/plain" }
-  );
+    await Actor.setValue(
+        `communication-${messageCount.toString().padStart(3, "0")}.txt`,
+        requestWithResponse,
+        { contentType: "text/plain" }
+    );
 
-  return text.replace(/```json/g, "").split("```")[0];
+    return text.replace(/```json/g, "").split("```")[0];
 }
 
 export async function createIllustrationForChapter({
-  seriesTitle,
-  seriesGenre,
-  seriesDescription,
-  mainCharacterDescription,
-  additionalCharacters,
-  chapterSummary,
-  chapterIllustrationDescription,
+    seriesTitle,
+    seriesGenre,
+    seriesDescription,
+    mainCharacterDescription,
+    additionalCharacters,
+    chapterSummary,
+    chapterIllustrationDescription,
 }) {
-  const prompt = `
+    const prompt = `
 Create an illustration for the chapter in a series titled ${seriesTitle}.
 The illustration should not contain any text inside the image.
 
@@ -176,26 +175,26 @@ The illustration should look like this:
 ${chapterIllustrationDescription}
 `;
 
-  const response = await openai.chat.completions.create({
-    model: "google/gemini-2.5-flash-image",
-    messages: [
-      { role: "user", content: prompt }
-    ],
-    modalities: ["text", "image"],
+    const response = await openai.chat.completions.create({
+        model: "google/gemini-2.5-flash-image",
+        messages: [
+            { role: "user", content: prompt }
+        ],
+        modalities: ["text", "image"],
 
-  });
+    });
 
-  const buffers = [];
+    const buffers = [];
 
-  const images = response.choices?.[0]?.message?.images ?? [];
+    const images = response.choices?.[0]?.message?.images ?? [];
 
-  for (const img of images) {
-    if (img.type === "image_url" && img.image_url?.url) {
-      const base64 = img.image_url.url.replace(/^data:image\/\w+;base64,/, "");
-      buffers.push(Buffer.from(base64, "base64"));
+    for (const img of images) {
+        if (img.type === "image_url" && img.image_url?.url) {
+            const base64 = img.image_url.url.replace(/^data:image\/\w+;base64,/, "");
+            buffers.push(Buffer.from(base64, "base64"));
+        }
     }
-  }
 
-  return buffers;
+    return buffers;
 
 }

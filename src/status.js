@@ -8,7 +8,7 @@ export const status = {
 };
 
 function chapterHtml(chapter) {
-      return `
+    return `
         <section>
             <header>
                 <h2>${chapter.chapterName}</h2>
