@@ -39,7 +39,7 @@ if (chapterHistoryStorageName) {
 
     chapterHistory = await chapterHistorySharedDataset.getData();
     if (chapterHistory.items.length > 0) {
-        log.info('Loaded chapter history from shared dataset', { chapterCount: chapterHistory.items });
+        log.info('Loaded chapter history from shared dataset', { chapterCount: chapterHistory.items.length });
     }
     history.chapterNumber = chapterHistory.items.reduce((max, item) => item.chapterNumber > max ? item.chapterNumber : max, 0);
 }
