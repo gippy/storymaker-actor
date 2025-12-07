@@ -54,23 +54,9 @@
                         "type": "string",
                         "description": "Descripe what should happen in the chapter",
                         "editor": "textarea"
-                    },
-                    "minLengthWords": {
-                        "title": "Minimum length of the chapter",
-                        "type": "integer",
-                        "description": "How long the chapter should be at minimum (word count)",
-                        "editor": "number",
-                        "unit": "words"
-                    },
-                    "maxLengthWords": {
-                        "title": "Maximum length of the chapter",
-                        "type": "integer",
-                        "description": "How long the chapter should be at maximum (word count)",
-                        "editor": "number",
-                        "unit": "words"
                     }
                 },
-                "required": ["number", "description", "minLengthWords", "maxLengthWords"],
+                "required": ["number", "description"],
                 "additionalProperties": false
             },
             "default": [],

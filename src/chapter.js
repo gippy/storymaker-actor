@@ -71,7 +71,7 @@ export async function writeNewChapter(series, textModel, illustrationModel, retr
     try {
         const latestChapterNumber = Math.max(0, ...Object.keys(writtenChapters));
         const chapter = {
-            number: latestChapterNumber + 1
+            number: latestChapterNumber + 1,
         };
         log.info('Generating chapter', { number: chapter.number });
 
@@ -94,7 +94,7 @@ export async function writeNewChapter(series, textModel, illustrationModel, retr
     }
 }
 
-export async function writeChapter(series, chapter, textModel, illustrationModel,retry = false) {
+export async function writeChapter(series, chapter, textModel, illustrationModel, retry = false) {
     try {
         log.info('Generating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
@@ -112,12 +112,12 @@ export async function writeChapter(series, chapter, textModel, illustrationModel
             log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         }
         // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
-        if (!retry) return writeChapter(series, chapter, true);
+        if (!retry) return writeChapter(series, chapter, textModel, illustrationModel, true);
         else throw error;
     }
 }
 
-export async function updateChapter(series, chapter, textModel, illustrationModelretry = false) {
+export async function updateChapter(series, chapter, textModel, illustrationModel, retry = false) {
     try {
         log.info('Updating chapter', { number: chapter.number });
         await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Generating ${chapter.number}`, isFinished: false });
@@ -139,3 +139,4 @@ export async function updateChapter(series, chapter, textModel, illustrationMode
         else throw error;
     }
 }
+

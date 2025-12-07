@@ -9,7 +9,17 @@ import { updateStatus, status } from './status.js';
 
 await Actor.init();
 
-const { seriesTitle, seriesGenre, seriesDescription, mainCharacterDescription, additionalCharacters, chapters, interactiveMode } = await Actor.getInput();
+const {
+    seriesTitle,
+    seriesGenre,
+    seriesDescription,
+    mainCharacterDescription,
+    additionalCharacters,
+    chapters,
+    interactiveMode,
+    textModel,
+    illustrationModel,
+} = await Actor.getInput();
 
 const series = {
     seriesTitle,
@@ -29,7 +39,7 @@ await createChat({
 
 for (let i = 0; i < chapters.length; i++) {
     const chapter = chapters[i]
-    await writeChapter(series, chapter);
+    await writeChapter(series, chapter, textModel, illustrationModel);
 }
 
 let isInteractiveModeOn = false;
@@ -52,12 +62,8 @@ if (interactiveMode) {
     });
 
     app.post('/', async (req, res) => {
-        const chapterData = {
-            minLengthWords: req.body.minLengthWords,
-            maxLengthWords: req.body.maxLengthWords,
-        };
-        log.info('Received next chapter data', chapterData);
-        const data = await writeNewChapter(series, chapterData);
+        log.info('Received next chapter request');
+        const data = await writeNewChapter(series, textModel, illustrationModel);
         res.send(data);
     });
 
@@ -67,7 +73,7 @@ if (interactiveMode) {
             ...req.body,
         };
         log.info('Received new chapter data', chapterData);
-        const data = await writeChapter(series, chapterData);
+        const data = await writeChapter(series, chapterData, textModel, illustrationModel);
         res.send(data);
     });
 
@@ -76,7 +82,7 @@ if (interactiveMode) {
             number: parseInt(req.params.chapterNumber, 10),
             updateRequest: req.body.message,
         };
-        const data = await updateChapter(series, chapterData);
+        const data = await updateChapter(series, chapterData, textModel, illustrationModel);
         res.send(data);
     });
 

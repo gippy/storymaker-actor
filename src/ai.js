@@ -73,7 +73,7 @@ export async function createChat({
 }
 
 // Generic function to send a message to the model
-async function sendAIMessage(message) {
+async function sendAIMessage(message, textModel) {
     const response = await openai.chat.completions.create({
         model: textModel,
         messages: [
@@ -92,7 +92,7 @@ async function sendAIMessage(message) {
     return text;
 }
 
-export async function writeChapterWithAI(chapter, retry) {
+export async function writeChapterWithAI(chapter, textModel, retry) {
     messageCount++;
 
     const message = `${retry
@@ -102,7 +102,7 @@ export async function writeChapterWithAI(chapter, retry) {
 **Chapter number:** ${chapter.number}
 **Chapter description:** ${chapter.description ?? ""}`;
 
-    const text = await sendAIMessage(message);
+    const text = await sendAIMessage(message, textModel);
 
     const requestWithResponse = `Message:
 ${message}
@@ -119,7 +119,7 @@ ${text}`;
     return text.replace(/```json/g, "").split("```")[0];
 }
 
-export async function updateChapterWithAI(chapter, retry) {
+export async function updateChapterWithAI(chapter, textModel, retry) {
     messageCount++;
 
     const message = `${retry
@@ -129,7 +129,7 @@ export async function updateChapterWithAI(chapter, retry) {
 **Chapter number:** ${chapter.number}
 **Update request:** ${chapter.updateRequest}`;
 
-    const text = await sendAIMessage(message);
+    const text = await sendAIMessage(message, textModel);
 
     const requestWithResponse = `Message:
 ${message}

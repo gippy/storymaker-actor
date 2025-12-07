@@ -193,18 +193,7 @@
             "ChapterGenerationRequest": {
                 "type": "object",
                 "description": "Request body for generating a new chapter without a specific number.",
-                "properties": {
-                    "minLengthWords": {
-                        "type": "string",
-                        "description": "Minimum length of the chapter body in words.",
-                        "example": "1000"
-                    },
-                    "maxLengthWords": {
-                        "type": "string",
-                        "description": "Maximum length of the chapter body in words.",
-                        "example": "2500"
-                    }
-                }
+                "properties": {}
             },
             "ChapterSpecificGenerationRequest": {
                 "type": "object",
