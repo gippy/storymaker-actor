@@ -15,15 +15,19 @@ let history = [];
 let systemInstruction = "";
 let messageCount = 0;
 
-// Create system prompt (formerly ai.chats.create)
 export async function createChat({
     seriesTitle,
     seriesGenre,
     seriesDescription,
     mainCharacterDescription,
     additionalCharacters,
-    textModel = "google/gemini-2.5-flash",
+    chapterHistory,
 }) {
+    const contextFromHistory = chapterHistory && chapterHistory.length > 0
+        ? `Here is some context from previous chapters to help you maintain consistency:
+${chapterHistory.map((ch) => `Chapter ${ch.number}: ${ch.summary}`).join("\n")}`
+        : "";
+
     systemInstruction = `
     You are an accomplished shadow writer and your role is to provide support to flash out ideas 
     for new chapters in a web series called ${seriesTitle}.
@@ -35,6 +39,8 @@ export async function createChat({
 
     In addition to main character, the series has following other important existing characters:
     ${additionalCharacters || "None"}
+
+    ${contextFromHistory}
 
     The book is written in a specific format and it's your role to write the content of the book 
     while keeping the format consistent.

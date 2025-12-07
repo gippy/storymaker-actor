@@ -59,6 +59,13 @@ async function processChapterFromAI(chapterText, chapter, series, illustrationMo
 
     await Actor.pushData(result);
 
+    result.htmlFileName = finalHtmlFileName;
+    result.html = finalFullChapterHtml;
+    result.jsonFileName = finalJsonFileName;
+    result.json = chapterData;
+    result.illustrationFileName = finalIllustrationFileName;
+    result.imageBuffer = buffer;
+
     writtenChapters[chapter.number] = result;
     draftCounts[chapter.number] = draftNumber;
 
@@ -88,7 +95,7 @@ export async function writeNewChapter(series, textModel, illustrationModel, retr
         } else {
             log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         }
-        // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
+        // The AI can create random stuff, let's try again if we failed to parse/store the chapter data
         if (!retry) return writeNewChapter(series, textModel, illustrationModel, true);
         else throw error;
     }

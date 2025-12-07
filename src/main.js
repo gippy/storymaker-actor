@@ -19,6 +19,7 @@ const {
     interactiveMode,
     textModel,
     illustrationModel,
+    chapterHistoryStorageName,
 } = await Actor.getInput();
 
 const series = {
@@ -29,12 +30,26 @@ const series = {
     additionalCharacters,
 };
 
+let chapterHistorySharedDataset;
+let chapterHistorySharedKeyValueStore;
+let chapterHistory;
+if (chapterHistoryStorageName) {
+    chapterHistorySharedDataset = await Actor.openDataset(chapterHistoryStorageName);
+    chapterHistorySharedKeyValueStore = await Actor.openKeyValueStore(chapterHistoryStorageName);
+
+    chapterHistory = await chapterHistorySharedDataset.getData();
+    if (chapterHistory.items.length > 0) {
+        log.info('Loaded chapter history from shared dataset', { chapterCount: seriesChapterHistory.length });
+    }
+}
+
 await createChat({
     seriesTitle,
     seriesGenre,
     seriesDescription,
     mainCharacterDescription,
-    additionalCharacters
+    additionalCharacters,
+    chapterHistory,
 });
 
 for (let i = 0; i < chapters.length; i++) {
@@ -43,6 +58,39 @@ for (let i = 0; i < chapters.length; i++) {
 }
 
 let isInteractiveModeOn = false;
+
+async function finish() {
+    isInteractiveModeOn = false;
+    if (chapterHistorySharedDataset && chapterHistorySharedKeyValueStore) {
+        log.info('Storing new chapters to shared storage');
+    
+        await updateStatus({ 
+            seriesTitle: series.seriesTitle, 
+            writtenChapters, 
+            statusMessage: `Storing chapters to shared storage`, 
+            isInteractiveModeOn, 
+            isFinished: true
+        });
+        
+        const keys = Object.keys(writtenChapters).sort((a,b) => a - b);
+        const historyToStore = [];
+        for (let i = 0; i < keys.length; i++) {
+            const chapter = writtenChapters[keys[i]];
+            historyToStore.push({
+                chapterNumber: chapter.number,
+                summary: chapter.summary,
+            });
+            await chapterHistorySharedKeyValueStore.setValue(chapter.htmlFileName, chapter.html, { contentType: 'text/html' });
+            await chapterHistorySharedKeyValueStore.setValue(chapter.jsonFileName, chapter.json, { contentType: 'application/json' });
+            await chapterHistorySharedKeyValueStore.setValue(chapter.illustrationFileName, chapter.imageBuffer, { contentType: 'image/png' });
+        }
+        await chapterHistorySharedDataset.pushData(historyToStore);
+        log.info('Stored chapter history to shared dataset and key-value store');
+    }
+
+    await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
+    await Actor.exit();
+}
 
 if (interactiveMode) {
     const app = express();
@@ -89,9 +137,7 @@ if (interactiveMode) {
     app.get('/exit', async (req, res) => {
         log.info('Received exit command, stopping interactive mode');
         res.send({ status: 'ok', message: 'Exiting...' });
-        isInteractiveModeOn = false;
-        await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
-        void Actor.exit();
+        await finish();
     })
 
     const port = process.env.ACTOR_WEB_SERVER_PORT;
@@ -103,6 +149,5 @@ if (interactiveMode) {
 }
 
 if (!interactiveMode) {
-    await updateStatus({ seriesTitle: series.seriesTitle, writtenChapters, statusMessage: `Finished`, isInteractiveModeOn, isFinished: true });
-    await Actor.exit();
+    await finish();
 }
