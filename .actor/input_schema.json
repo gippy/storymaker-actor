@@ -127,7 +127,7 @@
             "prefill": "google/gemini-2.5-flash",
             "default": "google/gemini-2.5-flash",
             "sectionCaption": "Used models",
-            "sectionDescription": "Select which AI models you want to use for text and illustration generation"
+            "sectionDescription": "Select which AI models you want to use for text and illustration generation. You either choose models from the provided options, or you can use any other model available [here](https://openrouter.ai/models)"
         
         },
         "illustrationModel": {
