@@ -67,6 +67,9 @@ export async function updateStatus({ seriesTitle, writtenChapters, statusMessage
             @media (max-width:640px){body{padding:14px} section header h2{font-size:1rem}}
             /* subtle content formatting inside chapters */
             blockquote{border-left:3px solid rgba(99,102,241,.12);padding-left:12px;color:var(--muted);margin:12px 0}
+            code{background:#f3f4f6;padding:2px 6px;border-radius:6px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace}
+        </style>
+    </head>
     <body>
         <div class="container">
             <div class="status">

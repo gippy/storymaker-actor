@@ -234,7 +234,7 @@ export async function getStatus({ seriesTitle }) {
                     exitBtn.textContent = 'Exiting...';
                     try {
                         await fetch('/exit');
-                        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;flex-direction:column"><h1>Actor finished</h1><p>You can close this tab now.</p></div>';
+                        document.body.innerHTML = '<div style="display:flex;justify-content:center;align-items:center;height:100%;flex-direction:column"><h1>Actor finished</h1></div>';
                     } catch (err){
                         console.error('Failed to exit:', err);
                         alert('Failed to exit: ' + err.message);
