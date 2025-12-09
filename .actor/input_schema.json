@@ -52,7 +52,7 @@
                     "description": {
                         "title": "Description of the chapter",
                         "type": "string",
-                        "description": "Descripe what should happen in the chapter",
+                        "description": "Describe what should happen in the chapter",
                         "editor": "textarea"
                     }
                 },
