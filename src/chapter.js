@@ -87,15 +87,7 @@ export async function writeNewChapter(series, textModel, illustrationModel, retr
         let chapterText = await writeChapterWithAI(chapter, textModel, retry);
         return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
-        if (error.data?.invalidItems) {
-            // Here we log separate exception for each item which failed validation, but you can handle it any way you want
-            error.data.invalidItems.forEach((item) => {
-                const { validationErrors } = item;
-                log.exception(error, 'Failed to properly generate chapter due to validation error', { validationErrors });
-            });
-        } else {
-            log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
-        }
+        log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         // The AI can create random stuff, let's try again if we failed to parse/store the chapter data
         if (!retry) return writeNewChapter(series, textModel, illustrationModel, true);
         else throw error;
@@ -110,15 +102,7 @@ export async function writeChapter(series, chapter, textModel, illustrationModel
         let chapterText = await writeChapterWithAI(chapter, textModel, retry);
         return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
-        if (error.data?.invalidItems) {
-            // Here we log separate exception for each item which failed validation, but you can handle it any way you want
-            error.data.invalidItems.forEach((item) => {
-                const { validationErrors } = item;
-                log.exception(error, 'Failed to properly generate chapter due to validation error', { validationErrors });
-            });
-        } else {
-            log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
-        }
+        log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         // The AI can create random stuff, let's try again if we failed to parse/store the chapter data
         if (!retry) return writeChapter(series, chapter, textModel, illustrationModel, true);
         else throw error;
@@ -133,16 +117,8 @@ export async function updateChapter(series, chapter, textModel, illustrationMode
         let chapterText = await updateChapterWithAI(chapter, textModel, retry);
         return await processChapterFromAI(chapterText, chapter, series, illustrationModel);
     } catch (error) {
-        if (error.data?.invalidItems) {
-            // Here we log separate exception for each item which failed validation, but you can handle it any way you want
-            error.data.invalidItems.forEach((item) => {
-                const { validationErrors } = item;
-                log.exception(error, 'Failed to properly generate chapter due to validation error', { validationErrors });
-            });
-        } else {
-            log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
-        }
-        // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
+        log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
+        // The AI can create random stuff, let's try again if we failed to parse/store the chapter data
         if (!retry) return updateChapter(series, chapter, textModel, illustrationModel, true);
         else throw error;
     }
