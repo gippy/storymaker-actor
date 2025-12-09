@@ -9,5 +9,7 @@
     "maxMemoryMbytes": 2048,
     "usesStandbyMode": false,
     "dockerfile": "../Dockerfile",
-    "readme": "./README.md"
+    "readme": "./README.md",
+
+    "input": "./input_schema.json"
 }

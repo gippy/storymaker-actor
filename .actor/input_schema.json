@@ -1,0 +1,127 @@
+{
+    "title": "Storymaker",
+    "description": "Input schema for Storymaker Actor",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "seriesTitle": {
+            "title": "Series title",
+            "type": "string",
+            "description": "Name of the series",
+            "editor": "textfield"
+        },
+        "seriesGenre": {
+            "title": "Series genre",
+            "type": "string",
+            "description": "Genre of the series",
+            "editor": "textfield"
+        },
+        "seriesDescription": {
+            "title": "Series description",
+            "type": "string",
+            "description": "Description of the series",
+            "editor": "textarea"
+        },
+        "mainCharacterDescription": {
+            "title": "Main character",
+            "type": "string",
+            "description": "Describe the main character",
+            "editor": "textarea",
+            "sectionCaption": "Characters"
+        },
+        "additionalCharacters": {
+            "title": "Additional characters",
+            "type": "string",
+            "description": "Describe additional characters appearing in the series",
+            "editor": "textarea"
+        },
+        "chapters": {
+            "title": "Chapters",
+            "type": "array",
+            "description": "Defines the chapters of the story",
+            "editor": "schemaBased",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "title": "Chapter number",
+                        "type": "integer",
+                        "description": "Which chapter we are currently on",
+                        "editor": "number"
+                    },
+                    "description": {
+                        "title": "Description of the chapter",
+                        "type": "string",
+                        "description": "Describe what should happen in the chapter",
+                        "editor": "textarea"
+                    }
+                },
+                "required": ["number", "description"],
+                "additionalProperties": false
+            },
+            "default": [],
+            "sectionCaption": "Chapters",
+            "sectionDescription": "Chapters provided in this section will be auto generated at the start of the run before the interactive mode is enabled (if you use it). If interactive mode is not enabled. After the chapters are generated, the Actor run will finish."
+        
+        },
+        "interactiveMode": {
+            "title": "Enable interactive mode",
+            "type": "boolean",
+            "description": "Allows you to interact with the Actor run through API",
+            "editor": "checkbox",
+            "default": false,
+            "sectionCaption": "Interactive mode",
+            "sectionDescription": "If you want to have more control over the creation of the chapters. You can run the Actor in interactive mode. This will allow you to use API to create and modify the chapters. But you will have to end the run either through `abort` in Apify Console, or through `/exit` API endpoint"
+        },
+        "textModel": {
+            "title": "Text generation model",
+            "type": "string",
+            "description": "AI model used for text generation",
+            "editor": "select",
+            "enumSuggestedValues": [
+                "google/gemini-2.5-flash", 
+                "google/gemini-2.5-pro", 
+                "openai/gpt-5.1-mini",
+                "openai/gpt-5.1",
+                "x-ai/grok-4.1-fast",
+                "anthropic/claude-sonnet-4.5",
+                "deepseek/deepseek-chat-v3.1",
+                "mistralai/mistral-nemo"
+            ],
+            "prefill": "google/gemini-2.5-flash",
+            "default": "google/gemini-2.5-flash",
+            "sectionCaption": "Used models",
+            "sectionDescription": "Select which AI models you want to use for text and illustration generation. You either choose models from the provided options, or you can use any other model available [here](https://openrouter.ai/models)"
+        
+        },
+        "illustrationModel": {
+            "title": "Illustration generation model",
+            "type": "string",
+            "description": "AI model used for illustration generation",
+            "editor": "select",
+            "enumSuggestedValues": [
+                "google/gemini-2.5-flash-image", 
+                "google/gemini-3-pro-image-preview",
+                "openai/gpt-5-image-mini",
+                "openai/gpt-5-image",
+                "black-forest-labs/flux.2-flex",
+                "black-forest-labs/flux.2-pro"
+            ],
+            "prefill": "google/gemini-2.5-flash-image",
+            "default": "google/gemini-2.5-flash-image"
+        },
+        "chapterHistoryStorageName": {
+            "title": "Chapter history",
+            "type": "string",
+            "editor": "textfield",
+            "description": "Define a name for storages used to store chapters across multiple runs",
+            "pattern": "^[a-zA-Z0-9-]+$",
+            "errorMessage": {
+                "pattern": "Please provide full named storage name in format only containing letters, numbers, and hyphens (a-zA-Z0-9-)."
+            },
+            "sectionCaption": "Chapter history",
+            "sectionDescription": "If you want to save the generated chapters in a named storage so that future runs can use it as context, provide a name here. The name will be used to create a named Dataset and Key-Value Store in your Apify account."
+        }
+    },
+    "required": ["seriesTitle", "seriesGenre", "seriesDescription", "mainCharacterDescription"]
+}
