@@ -142,7 +142,7 @@ export async function updateChapter(series, chapter, textModel, illustrationMode
         } else {
             log.exception(error, 'Failed to properly generate chapter', { willRetry: !!retry });
         }
-        // The AI can create random stuf, let's try again if we failed to parse/store the chapter data
+        // The AI can create random stuff, let's try again if we failed to parse/store the chapter data
         if (!retry) return updateChapter(series, chapter, textModel, illustrationModel, true);
         else throw error;
     }

@@ -16,7 +16,7 @@
         },
         "communication": {
             "title": "Communication",
-            "description": "Record of communication between the Actor and Google Gemini. Usefull for debugging",
+            "description": "Record of communication between the Actor and Google Gemini. Useful for debugging",
             "keyPrefix": "communication-",
             "contentTypes": ["text/plain"]
         }
